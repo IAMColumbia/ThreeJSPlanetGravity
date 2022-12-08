@@ -3,6 +3,8 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
 import * as CANNON from "cannon-es"
 import { DstColorFactor, Vector3 } from "three";
 import { Vec3 } from "cannon-es";
+import gsap from "gsap"
+import dat from "dat.gui"
 
 var width = window.innerWidth - 20;
 var height = window.innerHeight - 50;
@@ -36,29 +38,73 @@ const intersectPt = new THREE.Vector3();
 const planeNormal = new THREE.Vector3();
 const plane = new THREE.Plane();
 const raycaster = new THREE.Raycaster();
-const sphereMeshes = [];
-const sphereBodies = [];
+var sphereMeshes = [];
+var sphereBodies = [];
 
-const planePMat = new CANNON.Material();
-const planeBody = new CANNON.Body(
+const planetPMat = new CANNON.Material();
+world.addContactMaterial(new CANNON.ContactMaterial(
+    planetPMat,
+    planetPMat
+));
+
+//TODO:
+//gltf
+//interactive click
+//background
+
+var controls = new function() {
+    this.planetsAmount = 128;
+    this.planetSizeMin = 0.2;
+    this.planetSizeMax = 1;
+    this.planetDistanceMin = 20;
+    this.planetDistanceMax = 80;
+}
+
+const gui = new dat.GUI();
+gui.add({Restart} , "Restart");
+gui.add(controls, "planetsAmount");
+gui.add(controls, "planetSizeMin");
+gui.add(controls, "planetSizeMax");
+gui.add(controls, "planetDistanceMin");
+gui.add(controls, "planetDistanceMax");
+
+Restart();
+
+function Restart()
 {
-    type: CANNON.Body.STATIC,
-    shape: new CANNON.Box(new CANNON.Vec3(5,5,.1)),
-    material: planePMat
-});
-planeBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0);
-world.addBody(planeBody);
+    if(sphereBodies != null && sphereMeshes != null)
+    {
+        if(sphereBodies.length > 0 && sphereMeshes.length > 0)
+        {
+            for(let i = 0; i < sphereBodies.length; i++)
+            {
+                world.removeBody(sphereBodies[i]);
+                scene.remove(sphereMeshes[i]);
+            }
+        }
+    }
 
-CreatePlanet(new Vec3(0,0,0), 8);
-CreatePlanet(new Vec3(10,0,0), 1);
-CreatePlanet(new Vec3(10,10,0), 1);
-CreatePlanet(new Vec3(10,0,10), 1);
-CreatePlanet(new Vec3(10,0,-2), 1);
+    sphereBodies = [];
+    sphereMeshes = [];
+
+    CreatePlanet(new Vec3(0, 0, 0), 8);
+    for (let i = 0; i < controls.planetsAmount; i++) {
+        var randAngle = Math.random() * Math.PI * 2;
+        var distance = randomRange(controls.planetDistanceMin, controls.planetDistanceMax);
+        CreatePlanet(new Vec3(Math.sin(randAngle) * distance, Math.random(), Math.cos(randAngle) * distance), randomRange(controls.planetSizeMin, controls.planetSizeMax));
+    }
+}
+
+
+
+
+
 
 timeStep = 1/60;
 function animate()
 {
     world.step(timeStep);
+    
 
     for(let i = 0; i < sphereBodies.length; i++)
     {
@@ -92,24 +138,43 @@ window.addEventListener("click", function(e)
 function CreatePlanet(pos, radius)
 {
     const sphereGeo = new THREE.SphereGeometry(radius);
-    const sphereMat = new THREE.MeshStandardMaterial({color: 0xffffff * Math.random()});
+    var sphereMat = new THREE.MeshStandardMaterial({color: 0xffffff * Math.random()});
+    if(radius >= 8)
+    {
+        sphereMat = new THREE.MeshBasicMaterial({color: 0xf5e598})
+    }
     const planet = new THREE.Mesh(sphereGeo, sphereMat);
+    planet.scale.set(0, 0, 0);
+    gsap.to(planet.scale, { x: 1, y: 1, z: 1, duration: 1 });
+    if(radius >= 8)
+    {
+        var pointLight = new THREE.PointLight(0xf5e598, 5, radius * 8);
+        pointLight.position.set(pos.x, pos.y, pos.z);
+        planet.add(pointLight);
+    }
     planet.position.set(pos.x, pos.y, pos.z);
     const body = new CANNON.Body(
     {   
         type: CANNON.Body.DYNAMIC,
-        shape: new CANNON.Sphere(radius) / 2,
+        shape: new CANNON.Sphere(radius),
         mass: radius * radius,
-        position: new CANNON.Vec3(pos.x, pos.y, pos.z)
+        position: new CANNON.Vec3(pos.x, pos.y, pos.z),
+        material: planetPMat
     });
+
+    
     
     scene.add(planet);
     world.addBody(body);
 
-    body.applyImpulse(new Vec3(Math.random() * 8, Math.random() * 8, Math.random() * 8));
+    body.applyImpulse(new Vec3(randomRange(-10, 10), Math.random() * 2, randomRange(-10, 10)));
 
     sphereMeshes.push(planet);
     sphereBodies.push(body);
+}
+
+function randomRange(min, max) {
+    return Math.random() * (max - min) + min;
 }
 
 window.addEventListener("mousemove", function(e)
