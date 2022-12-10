@@ -19,9 +19,35 @@ camera.position.x = 0;
 camera.updateProjectionMatrix();
 
 const renderer = new THREE.WebGLRenderer({antialias:true});
-renderer.setClearColor("#070808");
+renderer.autoClearColor = false;
 renderer.setSize(width, height);
 document.body.appendChild(renderer.domElement);
+
+{
+const loader = new THREE.CubeTextureLoader();
+  const texture = loader.load([
+    '/src/images/sky_stars_01_left.png',
+    '/src/images/sky_stars_01_right.png',
+    '/src/images/sky_stars_01_up.png',
+    '/src/images/sky_stars_01_down.png',
+    '/src/images/sky_stars_01_front.png',
+    '/src/images/sky_stars_01_back.png',
+  ]);
+  scene.background = texture;
+}
+
+// {
+//     const loader = new THREE.CubeTextureLoader();
+//     const texture = loader.load([
+//       'https://r105.threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/pos-x.jpg',
+//       'https://r105.threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/neg-x.jpg',
+//       'https://r105.threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/pos-y.jpg',
+//       'https://r105.threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/neg-y.jpg',
+//       'https://r105.threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/pos-z.jpg',
+//       'https://r105.threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/neg-z.jpg',
+//     ]);
+//     scene.background = texture;
+//   }
 
 const orbit = new OrbitControls(camera, renderer.domElement);
 

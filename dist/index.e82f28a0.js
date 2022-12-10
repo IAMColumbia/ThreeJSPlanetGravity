@@ -554,9 +554,32 @@ camera.updateProjectionMatrix();
 const renderer = new _three.WebGLRenderer({
     antialias: true
 });
-renderer.setClearColor("#070808");
+renderer.autoClearColor = false;
 renderer.setSize(width, height);
 document.body.appendChild(renderer.domElement);
+{
+    const loader = new _three.CubeTextureLoader();
+    const texture = loader.load([
+        "/src/images/sky_stars_01_left.png",
+        "/src/images/sky_stars_01_right.png",
+        "/src/images/sky_stars_01_up.png",
+        "/src/images/sky_stars_01_down.png",
+        "/src/images/sky_stars_01_front.png",
+        "/src/images/sky_stars_01_back.png", 
+    ]);
+    scene.background = texture;
+}// {
+//     const loader = new THREE.CubeTextureLoader();
+//     const texture = loader.load([
+//       'https://r105.threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/pos-x.jpg',
+//       'https://r105.threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/neg-x.jpg',
+//       'https://r105.threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/pos-y.jpg',
+//       'https://r105.threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/neg-y.jpg',
+//       'https://r105.threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/pos-z.jpg',
+//       'https://r105.threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/neg-z.jpg',
+//     ]);
+//     scene.background = texture;
+//   }
 const orbit = new (0, _orbitControls.OrbitControls)(camera, renderer.domElement);
 const gridhelper = new _three.GridHelper();
 scene.add(gridhelper);
@@ -683,7 +706,7 @@ window.addEventListener("resize", function() {
     renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-},{"three":"ktPTu","three/examples/jsm/controls/OrbitControls":"7mqRv","cannon-es":"HCu3b","gsap":"fPSuC","@parcel/transformer-js/src/esmodule-helpers.js":"5K4W2","dat.gui":"k3xQk"}],"ktPTu":[function(require,module,exports) {
+},{"three":"ktPTu","three/examples/jsm/controls/OrbitControls":"7mqRv","cannon-es":"HCu3b","gsap":"fPSuC","dat.gui":"k3xQk","@parcel/transformer-js/src/esmodule-helpers.js":"5K4W2"}],"ktPTu":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "ACESFilmicToneMapping", ()=>ACESFilmicToneMapping);
