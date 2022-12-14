@@ -2,9 +2,11 @@ import * as THREE from "three"
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
 import * as CANNON from "cannon-es"
 import { DstColorFactor, Vector3 } from "three";
-import { Vec3 } from "cannon-es";
+import { ConvexPolyhedron, Vec3 } from "cannon-es";
 import gsap from "gsap"
 import dat from "dat.gui"
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+
 
 var width = window.innerWidth - 20;
 var height = window.innerHeight - 50;
@@ -23,15 +25,22 @@ renderer.autoClearColor = false;
 renderer.setSize(width, height);
 document.body.appendChild(renderer.domElement);
 
+const leftImage = require("/static/images/sky_stars_01_left.png");
+const rightImage = require("/static/images/sky_stars_01_right.png");
+const upImage = require("/static/images/sky_stars_01_up.png");
+const downImage = require("/static/images/sky_stars_01_down.png");
+const frontImage = require("/static/images/sky_stars_01_front.png");
+const backImage = require("/static/images/sky_stars_01_back.png");
+
 {
 const loader = new THREE.CubeTextureLoader();
   const texture = loader.load([
-    '/src/images/sky_stars_01_left.png',
-    '/src/images/sky_stars_01_right.png',
-    '/src/images/sky_stars_01_up.png',
-    '/src/images/sky_stars_01_down.png',
-    '/src/images/sky_stars_01_front.png',
-    '/src/images/sky_stars_01_back.png',
+    leftImage,
+    rightImage,
+    upImage,
+    downImage,
+    frontImage,
+    backImage,
   ]);
   scene.background = texture;
 }
@@ -54,7 +63,7 @@ const orbit = new OrbitControls(camera, renderer.domElement);
 const gridhelper = new THREE.GridHelper();
 scene.add(gridhelper);
 
-const ambientLight = new THREE.AmbientLight("#fafcd7", 0.2);
+const ambientLight = new THREE.AmbientLight("#fafcd7", 0.5);
 scene.add(ambientLight);
 const directionalLight = new THREE.DirectionalLight("#fafcd7", 0.2);
 scene.add(directionalLight);
@@ -74,7 +83,6 @@ world.addContactMaterial(new CANNON.ContactMaterial(
 ));
 
 //TODO:
-//gltf
 //interactive click
 //background
 
@@ -84,6 +92,9 @@ var controls = new function() {
     this.planetSizeMax = 1;
     this.planetDistanceMin = 20;
     this.planetDistanceMax = 80;
+    this.spawnSun = true;
+    this.monkeyPlanets = false;
+    this.monkeyShooterMode = false;
 }
 
 const gui = new dat.GUI();
@@ -93,6 +104,9 @@ gui.add(controls, "planetSizeMin");
 gui.add(controls, "planetSizeMax");
 gui.add(controls, "planetDistanceMin");
 gui.add(controls, "planetDistanceMax");
+gui.add(controls, "spawnSun");
+gui.add(controls, "monkeyPlanets");
+gui.add(controls, "monkeyShooterMode");
 
 Restart();
 
@@ -113,18 +127,15 @@ function Restart()
     sphereBodies = [];
     sphereMeshes = [];
 
-    CreatePlanet(new Vec3(0, 0, 0), 8);
+    if(controls.spawnSun)
+    { CreatePlanet(new Vec3(0, 0, 0), 8, controls.monkeyPlanets); }
+
     for (let i = 0; i < controls.planetsAmount; i++) {
         var randAngle = Math.random() * Math.PI * 2;
         var distance = randomRange(controls.planetDistanceMin, controls.planetDistanceMax);
-        CreatePlanet(new Vec3(Math.sin(randAngle) * distance, Math.random(), Math.cos(randAngle) * distance), randomRange(controls.planetSizeMin, controls.planetSizeMax));
+        CreatePlanet(new Vec3(Math.sin(randAngle) * distance, Math.random(), Math.cos(randAngle) * distance), randomRange(controls.planetSizeMin, controls.planetSizeMax), controls.monkeyPlanets);
     }
 }
-
-
-
-
-
 
 timeStep = 1/60;
 function animate()
@@ -161,47 +172,95 @@ window.addEventListener("click", function(e)
     
 });
 
-function CreatePlanet(pos, radius)
+function CreatePlanet(pos, radius) { CreatePlanet(pos, radius, true); }
+function CreatePlanet(pos, radius, monkeyMode = true)
 {
-    const sphereGeo = new THREE.SphereGeometry(radius);
-    var sphereMat = new THREE.MeshStandardMaterial({color: 0xffffff * Math.random()});
-    if(radius >= 8)
-    {
-        sphereMat = new THREE.MeshBasicMaterial({color: 0xf5e598})
+    var planet;
+    if (!monkeyMode) {
+        const sphereGeo = new THREE.SphereGeometry(radius);
+        var sphereMat = new THREE.MeshStandardMaterial({ color: 0xffffff * Math.random() });
+        if (radius >= 8) {
+            sphereMat = new THREE.MeshBasicMaterial({ color: 0xf5e598 })
+        }
+        planet = new THREE.Mesh(sphereGeo, sphereMat);
+        planet.scale.set(0, 0, 0);
+        scene.add(planet);
+        gsap.to(planet.scale, { x: 1, y: 1, z: 1, duration: 1 });
+        if (radius >= 8) {
+            var pointLight = new THREE.PointLight(0xf5e598, 5, radius * 8);
+            pointLight.position.set(pos.x, pos.y, pos.z);
+            planet.add(pointLight);
+        }
+
+        planet.position.set(pos.x, pos.y, pos.z);
+        const body = new CANNON.Body(
+            {
+                type: CANNON.Body.DYNAMIC,
+                shape: new CANNON.Sphere(radius),
+                mass: radius * radius,
+                position: new CANNON.Vec3(pos.x, pos.y, pos.z),
+                material: planetPMat
+            });
+
+        world.addBody(body);
+        body.applyImpulse(new Vec3(randomRange(-10, 10), Math.random() * 2, randomRange(-10, 10)));
+
+        sphereMeshes.push(planet);
+        sphereBodies.push(body);
     }
-    const planet = new THREE.Mesh(sphereGeo, sphereMat);
-    planet.scale.set(0, 0, 0);
-    gsap.to(planet.scale, { x: 1, y: 1, z: 1, duration: 1 });
-    if(radius >= 8)
+    else
     {
-        var pointLight = new THREE.PointLight(0xf5e598, 5, radius * 8);
-        pointLight.position.set(pos.x, pos.y, pos.z);
-        planet.add(pointLight);
+        const monkeyURL = new URL("../monkey.glb", import.meta.url);
+        const assetLoader = new GLTFLoader();
+        assetLoader.load
+            (
+                monkeyURL.href,
+                function (gltf) {
+                    //planet = new THREE.Mesh(gltf.scene.children[0]);
+                    planet = gltf.scene;
+                    var newMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff * Math.random() });
+                    planet.traverse((o) => {
+                        if (o.isMesh) o.material = newMaterial;
+                    });
+                    planet.scale.set(0, 0, 0);
+                    scene.add(planet);
+                    gsap.to(planet.scale, { x: radius, y: radius, z: radius, duration: 1 });
+                    planet.position.set(pos.x, pos.y, pos.z);
+                    const body = new CANNON.Body(
+                        {
+                            type: CANNON.Body.DYNAMIC,
+                            shape: new CANNON.Sphere(radius),
+                            mass: radius * radius,
+                            position: new CANNON.Vec3(pos.x, pos.y, pos.z),
+                            material: planetPMat
+                        });
+                    world.addBody(body);
+
+                    body.applyImpulse(new Vec3(randomRange(-10, 10), Math.random() * 2, randomRange(-10, 10)));
+
+                    sphereMeshes.push(planet);
+                    sphereBodies.push(body);
+                },
+                undefined,
+                function (error) {
+                    console.error(error);
+                    return;
+                }
+            );
     }
-    planet.position.set(pos.x, pos.y, pos.z);
-    const body = new CANNON.Body(
-    {   
-        type: CANNON.Body.DYNAMIC,
-        shape: new CANNON.Sphere(radius),
-        mass: radius * radius,
-        position: new CANNON.Vec3(pos.x, pos.y, pos.z),
-        material: planetPMat
-    });
-
-    
-    
-    scene.add(planet);
-    world.addBody(body);
-
-    body.applyImpulse(new Vec3(randomRange(-10, 10), Math.random() * 2, randomRange(-10, 10)));
-
-    sphereMeshes.push(planet);
-    sphereBodies.push(body);
 }
 
 function randomRange(min, max) {
     return Math.random() * (max - min) + min;
 }
+
+window.addEventListener("mousedown", function () {
+    if(!controls.monkeyShooterMode)
+    { return; }
+
+    CreatePlanet(camera.position, 1, true);
+    //ALMOST, just gotta add force in the right direcgion
+});
 
 window.addEventListener("mousemove", function(e)
 {
