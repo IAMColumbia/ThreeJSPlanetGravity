@@ -15,6 +15,8 @@ const scene = new THREE.Scene();
 const world = new CANNON.World({gravity: new CANNON.Vec3(0, 0, 0)});
 const camera = new THREE.PerspectiveCamera(50, width / height, .1, 1000);
 
+const Vector3Zero = new THREE.Vector3(0, 0, 0);
+
 camera.position.z = 75;
 camera.position.y = 30;
 camera.position.x = 0;
@@ -44,19 +46,6 @@ const loader = new THREE.CubeTextureLoader();
   ]);
   scene.background = texture;
 }
-
-// {
-//     const loader = new THREE.CubeTextureLoader();
-//     const texture = loader.load([
-//       'https://r105.threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/pos-x.jpg',
-//       'https://r105.threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/neg-x.jpg',
-//       'https://r105.threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/pos-y.jpg',
-//       'https://r105.threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/neg-y.jpg',
-//       'https://r105.threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/pos-z.jpg',
-//       'https://r105.threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/neg-z.jpg',
-//     ]);
-//     scene.background = texture;
-//   }
 
 const orbit = new OrbitControls(camera, renderer.domElement);
 
@@ -172,7 +161,6 @@ window.addEventListener("click", function(e)
     
 });
 
-function CreatePlanet(pos, radius) { CreatePlanet(pos, radius, true); }
 function CreatePlanet(pos, radius, monkeyMode = true)
 {
     var planet;
@@ -203,6 +191,7 @@ function CreatePlanet(pos, radius, monkeyMode = true)
             });
 
         world.addBody(body);
+
         body.applyImpulse(new Vec3(randomRange(-10, 10), Math.random() * 2, randomRange(-10, 10)));
 
         sphereMeshes.push(planet);
@@ -258,7 +247,13 @@ window.addEventListener("mousedown", function () {
     if(!controls.monkeyShooterMode)
     { return; }
 
-    CreatePlanet(camera.position, 1, true);
+    var forwardVector = new THREE.Vector3();
+    camera.getWorldDirection(forwardVector);
+    forwardVector.x = forwardVector.x * 10 + camera.position.x;
+    forwardVector.y = forwardVector.y * 10 + camera.position.y;
+    forwardVector.z = forwardVector.z * 10 + camera.position.z;
+    var forceVector = new THREE.Vector3(forwardVector.x * -controls.monkeySpeed, forwardVector.y * -controls.monkeySpeed, forwardVector.z * -controls.monkeySpeed);
+    CreatePlanet(forwardVector, 1, true, forceVector);
     //ALMOST, just gotta add force in the right direcgion
 });
 

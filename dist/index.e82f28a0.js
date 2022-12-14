@@ -142,14 +142,14 @@
       this[globalName] = mainExports;
     }
   }
-})({"fK4lP":[function(require,module,exports) {
+})({"kQAxj":[function(require,module,exports) {
+"use strict";
 var global = arguments[3];
 var HMR_HOST = null;
 var HMR_PORT = null;
 var HMR_SECURE = false;
 var HMR_ENV_HASH = "d6ea1d42532a7575";
 module.bundle.HMR_BUNDLE_ID = "207a8fdfe82f28a0";
-"use strict";
 /* global HMR_HOST, HMR_PORT, HMR_ENV_HASH, HMR_SECURE, chrome, browser, globalThis, __parcel__import__, __parcel__importScripts__, ServiceWorkerGlobalScope */ /*::
 import type {
   HMRAsset,
@@ -548,6 +548,7 @@ const world = new _cannonEs.World({
     gravity: new _cannonEs.Vec3(0, 0, 0)
 });
 const camera = new _three.PerspectiveCamera(50, width / height, .1, 1000);
+const Vector3Zero = new _three.Vector3(0, 0, 0);
 camera.position.z = 75;
 camera.position.y = 30;
 camera.position.x = 0;
@@ -572,22 +573,10 @@ const backImage = require("/static/images/sky_stars_01_back.png");
         upImage,
         downImage,
         frontImage,
-        backImage
+        backImage, 
     ]);
     scene.background = texture;
-}// {
-//     const loader = new THREE.CubeTextureLoader();
-//     const texture = loader.load([
-//       'https://r105.threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/pos-x.jpg',
-//       'https://r105.threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/neg-x.jpg',
-//       'https://r105.threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/pos-y.jpg',
-//       'https://r105.threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/neg-y.jpg',
-//       'https://r105.threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/pos-z.jpg',
-//       'https://r105.threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/neg-z.jpg',
-//     ]);
-//     scene.background = texture;
-//   }
-const orbit = new (0, _orbitControls.OrbitControls)(camera, renderer.domElement);
+}const orbit = new (0, _orbitControls.OrbitControls)(camera, renderer.domElement);
 const gridhelper = new _three.GridHelper();
 scene.add(gridhelper);
 const ambientLight = new _three.AmbientLight("#fafcd7", 0.5);
@@ -666,9 +655,6 @@ function animate() {
 }
 renderer.setAnimationLoop(animate);
 window.addEventListener("click", function(e) {});
-function CreatePlanet(pos, radius) {
-    CreatePlanet(pos, radius, true);
-}
 function CreatePlanet(pos, radius, monkeyMode = true) {
     var planet;
     if (!monkeyMode) {
@@ -706,7 +692,7 @@ function CreatePlanet(pos, radius, monkeyMode = true) {
         sphereMeshes.push(planet);
         sphereBodies.push(body);
     } else {
-        const monkeyURL = new URL(require("90f149b80e778daa"));
+        const monkeyURL = new URL(require("9c52426fa14299a7"));
         const assetLoader = new (0, _gltfloaderJs.GLTFLoader)();
         assetLoader.load(monkeyURL.href, function(gltf) {
             //planet = new THREE.Mesh(gltf.scene.children[0]);
@@ -748,7 +734,13 @@ function randomRange(min, max) {
 }
 window.addEventListener("mousedown", function() {
     if (!controls.monkeyShooterMode) return;
-    CreatePlanet(camera.position, 1, true);
+    var forwardVector = new _three.Vector3();
+    camera.getWorldDirection(forwardVector);
+    forwardVector.x = forwardVector.x * 10 + camera.position.x;
+    forwardVector.y = forwardVector.y * 10 + camera.position.y;
+    forwardVector.z = forwardVector.z * 10 + camera.position.z;
+    var forceVector = new _three.Vector3(forwardVector.x * -controls.monkeySpeed, forwardVector.y * -controls.monkeySpeed, forwardVector.z * -controls.monkeySpeed);
+    CreatePlanet(forwardVector, 1, true, forceVector);
 //ALMOST, just gotta add force in the right direcgion
 });
 window.addEventListener("mousemove", function(e) {
@@ -765,12 +757,8 @@ window.addEventListener("resize", function() {
     renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-},{"three":"ktPTu","three/examples/jsm/controls/OrbitControls":"7mqRv","cannon-es":"HCu3b","gsap":"fPSuC","dat.gui":"k3xQk","three/examples/jsm/loaders/GLTFLoader.js":"dVRsF","/static/images/sky_stars_01_left.png":"3CgX7","/static/images/sky_stars_01_right.png":"53iWI","/static/images/sky_stars_01_up.png":"iJyQ5","/static/images/sky_stars_01_down.png":"bKRK4","/static/images/sky_stars_01_front.png":"bKsDr","/static/images/sky_stars_01_back.png":"7UHI3","90f149b80e778daa":"6oTxN","@parcel/transformer-js/src/esmodule-helpers.js":"liiLQ"}],"ktPTu":[function(require,module,exports) {
-/**
- * @license
- * Copyright 2010-2022 Three.js Authors
- * SPDX-License-Identifier: MIT
- */ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+},{"three":"ktPTu","three/examples/jsm/controls/OrbitControls":"7mqRv","cannon-es":"HCu3b","gsap":"fPSuC","dat.gui":"k3xQk","three/examples/jsm/loaders/GLTFLoader.js":"dVRsF","/static/images/sky_stars_01_left.png":"3cxOA","/static/images/sky_stars_01_right.png":"9hnju","/static/images/sky_stars_01_up.png":"aKRAW","/static/images/sky_stars_01_down.png":"eYgJh","/static/images/sky_stars_01_front.png":"bfROX","/static/images/sky_stars_01_back.png":"iuZ44","9c52426fa14299a7":"5DiMS","@parcel/transformer-js/src/esmodule-helpers.js":"5K4W2"}],"ktPTu":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "ACESFilmicToneMapping", ()=>ACESFilmicToneMapping);
 parcelHelpers.export(exports, "AddEquation", ()=>AddEquation);
@@ -1179,7 +1167,11 @@ parcelHelpers.export(exports, "ZeroSlopeEnding", ()=>ZeroSlopeEnding);
 parcelHelpers.export(exports, "ZeroStencilOp", ()=>ZeroStencilOp);
 parcelHelpers.export(exports, "_SRGBAFormat", ()=>_SRGBAFormat);
 parcelHelpers.export(exports, "sRGBEncoding", ()=>sRGBEncoding);
-const REVISION = "146";
+/**
+ * @license
+ * Copyright 2010-2022 Three.js Authors
+ * SPDX-License-Identifier: MIT
+ */ const REVISION = "146";
 const MOUSE = {
     LEFT: 0,
     MIDDLE: 1,
@@ -9821,7 +9813,7 @@ const ShaderLib = {
                 opacity: {
                     value: 1.0
                 }
-            }
+            }, 
         ]),
         vertexShader: ShaderChunk.shadow_vert,
         fragmentShader: ShaderChunk.shadow_frag
@@ -17928,9 +17920,7 @@ function WebGLRenderer(parameters = {}) {
                     return;
                 }
                 const halfFloatSupportedByExt = textureType === HalfFloatType && (extensions.has("EXT_color_buffer_half_float") || capabilities.isWebGL2 && extensions.has("EXT_color_buffer_float"));
-                if (textureType !== UnsignedByteType && utils.convert(textureType) !== _gl.getParameter(35738) && // Edge and Chrome Mac < 52 (#9513)
-                !(textureType === FloatType && (capabilities.isWebGL2 || extensions.has("OES_texture_float") || extensions.has("WEBGL_color_buffer_float"))) && // Chrome Mac >= 52 and Firefox
-                !halfFloatSupportedByExt) {
+                if (textureType !== UnsignedByteType && utils.convert(textureType) !== _gl.getParameter(35738) && !(textureType === FloatType && (capabilities.isWebGL2 || extensions.has("OES_texture_float") || extensions.has("WEBGL_color_buffer_float"))) && !halfFloatSupportedByExt) {
                     console.error("THREE.WebGLRenderer.readRenderTargetPixels: renderTarget is not in UnsignedByteType or implementation defined type.");
                     return;
                 }
@@ -21441,10 +21431,7 @@ function pointInTriangle(ax, ay, bx, by, cx, cy, px, py) {
 }
 // check if a diagonal between two polygon nodes is valid (lies in polygon interior)
 function isValidDiagonal(a, b) {
-    return a.next.i !== b.i && a.prev.i !== b.i && !intersectsPolygon(a, b) && // dones't intersect other edges
-    (locallyInside(a, b) && locallyInside(b, a) && middleInside(a, b) && // locally visible
-    (area(a.prev, a, b.prev) || area(a, b.prev, b)) || // does not create opposite-facing sectors
-    equals(a, b) && area(a.prev, a, a.next) > 0 && area(b.prev, b, b.next) > 0); // special zero-length case
+    return a.next.i !== b.i && a.prev.i !== b.i && !intersectsPolygon(a, b) && (locallyInside(a, b) && locallyInside(b, a) && middleInside(a, b) && (area(a.prev, a, b.prev) || area(a, b.prev, b)) || equals(a, b) && area(a.prev, a, a.next) > 0 && area(b.prev, b, b.next) > 0); // special zero-length case
 }
 // signed area of a triangle
 function area(p, q, r) {
@@ -23357,8 +23344,7 @@ function arraySlice(array, from, to) {
 }
 // converts an array to a specific type
 function convertArray(array, type, forceClone) {
-    if (!array || // let 'undefined' and 'null' pass
-    !forceClone && array.constructor === type) return array;
+    if (!array || !forceClone && array.constructor === type) return array;
     if (typeof type.BYTES_PER_ELEMENT === "number") return new type(array); // create typed array
     return Array.prototype.slice.call(array); // create Array
 }
@@ -27167,32 +27153,32 @@ PropertyBinding.prototype.GetterByBindingType = [
     PropertyBinding.prototype._getValue_direct,
     PropertyBinding.prototype._getValue_array,
     PropertyBinding.prototype._getValue_arrayElement,
-    PropertyBinding.prototype._getValue_toArray
+    PropertyBinding.prototype._getValue_toArray, 
 ];
 PropertyBinding.prototype.SetterByBindingTypeAndVersioning = [
     [
         // Direct
         PropertyBinding.prototype._setValue_direct,
         PropertyBinding.prototype._setValue_direct_setNeedsUpdate,
-        PropertyBinding.prototype._setValue_direct_setMatrixWorldNeedsUpdate
+        PropertyBinding.prototype._setValue_direct_setMatrixWorldNeedsUpdate, 
     ],
     [
         // EntireArray
         PropertyBinding.prototype._setValue_array,
         PropertyBinding.prototype._setValue_array_setNeedsUpdate,
-        PropertyBinding.prototype._setValue_array_setMatrixWorldNeedsUpdate
+        PropertyBinding.prototype._setValue_array_setMatrixWorldNeedsUpdate, 
     ],
     [
         // ArrayElement
         PropertyBinding.prototype._setValue_arrayElement,
         PropertyBinding.prototype._setValue_arrayElement_setNeedsUpdate,
-        PropertyBinding.prototype._setValue_arrayElement_setMatrixWorldNeedsUpdate
+        PropertyBinding.prototype._setValue_arrayElement_setMatrixWorldNeedsUpdate, 
     ],
     [
         // HasToFromArray
         PropertyBinding.prototype._setValue_fromArray,
         PropertyBinding.prototype._setValue_fromArray_setNeedsUpdate,
-        PropertyBinding.prototype._setValue_fromArray_setMatrixWorldNeedsUpdate
+        PropertyBinding.prototype._setValue_fromArray_setMatrixWorldNeedsUpdate, 
     ]
 ];
 /**
@@ -27808,7 +27794,7 @@ class AnimationMixer extends EventDispatcher {
             // increment reference counts / sort out state
             for(let i = 0, n = bindings.length; i !== n; ++i){
                 const binding = bindings[i];
-                if (binding.useCount++ === 0) {
+                if ((binding.useCount++) === 0) {
                     this._lendBinding(binding);
                     binding.saveOriginalState();
                 }
@@ -29940,7 +29926,7 @@ if (typeof window !== "undefined") {
     else window.__THREE__ = REVISION;
 }
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"liiLQ"}],"liiLQ":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"5K4W2"}],"5K4W2":[function(require,module,exports) {
 exports.interopDefault = function(a) {
     return a && a.__esModule ? a : {
         default: a
@@ -30654,10 +30640,8 @@ class MapControls extends OrbitControls {
     }
 }
 
-},{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"liiLQ"}],"HCu3b":[function(require,module,exports) {
-/**
- * Records what objects are colliding with each other
- */ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+},{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"5K4W2"}],"HCu3b":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "AABB", ()=>AABB);
 parcelHelpers.export(exports, "ArrayCollisionMatrix", ()=>ArrayCollisionMatrix);
@@ -30714,7 +30698,9 @@ parcelHelpers.export(exports, "Vec3", ()=>Vec3);
 parcelHelpers.export(exports, "Vec3Pool", ()=>Vec3Pool);
 parcelHelpers.export(exports, "WheelInfo", ()=>WheelInfo);
 parcelHelpers.export(exports, "World", ()=>World);
-class ObjectCollisionMatrix {
+/**
+ * Records what objects are colliding with each other
+ */ class ObjectCollisionMatrix {
     /**
    * The matrix storage.
    */ /**
@@ -39693,7 +39679,7 @@ const endShapeContactEvent = {
     shapeB: null
 };
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"liiLQ"}],"fPSuC":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"5K4W2"}],"fPSuC":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "gsap", ()=>gsapWithCSS);
@@ -39726,7 +39712,7 @@ var _csspluginJs = require("./CSSPlugin.js");
 var gsapWithCSS = (0, _gsapCoreJs.gsap).registerPlugin((0, _csspluginJs.CSSPlugin)) || (0, _gsapCoreJs.gsap), // to protect from tree shaking
 TweenMaxWithCSS = gsapWithCSS.core.Tween;
 
-},{"./gsap-core.js":"05eeC","./CSSPlugin.js":"l02JQ","@parcel/transformer-js/src/esmodule-helpers.js":"liiLQ"}],"05eeC":[function(require,module,exports) {
+},{"./gsap-core.js":"05eeC","./CSSPlugin.js":"l02JQ","@parcel/transformer-js/src/esmodule-helpers.js":"5K4W2"}],"05eeC":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "GSCache", ()=>GSCache);
@@ -39875,7 +39861,7 @@ _unitExp = /^[+\-=e\s\d]*\d+[.\d]*([a-z]*|%)\s*$/i, _globalTimeline, _win, _core
     if (!(harnessPlugin = (target._gsap || {}).harness)) {
         // find the first target with a harness. We assume targets passed into an animation will be of similar type, meaning the same kind of harness can be used for them all (performance optimization)
         i = _harnessPlugins.length;
-        while(i-- && !_harnessPlugins[i].targetTest(target));
+        while((i--) && !_harnessPlugins[i].targetTest(target));
         harnessPlugin = _harnessPlugins[i];
     }
     i = targets.length;
@@ -42717,7 +42703,14 @@ _coreReady = 1;
 _windowExists() && _wake();
 var Power0 = _easeMap.Power0, Power1 = _easeMap.Power1, Power2 = _easeMap.Power2, Power3 = _easeMap.Power3, Power4 = _easeMap.Power4, Linear = _easeMap.Linear, Quad = _easeMap.Quad, Cubic = _easeMap.Cubic, Quart = _easeMap.Quart, Quint = _easeMap.Quint, Strong = _easeMap.Strong, Elastic = _easeMap.Elastic, Back = _easeMap.Back, SteppedEase = _easeMap.SteppedEase, Bounce = _easeMap.Bounce, Sine = _easeMap.Sine, Expo = _easeMap.Expo, Circ = _easeMap.Circ;
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"liiLQ"}],"l02JQ":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"5K4W2"}],"l02JQ":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "CSSPlugin", ()=>CSSPlugin);
+parcelHelpers.export(exports, "default", ()=>CSSPlugin);
+parcelHelpers.export(exports, "_getBBox", ()=>_getBBox);
+parcelHelpers.export(exports, "_createElement", ()=>_createElement);
+parcelHelpers.export(exports, "checkPrefix", ()=>_checkPropPrefix);
 /*!
  * CSSPlugin 3.11.3
  * https://greensock.com
@@ -42726,14 +42719,7 @@ var Power0 = _easeMap.Power0, Power1 = _easeMap.Power1, Power2 = _easeMap.Power2
  * Subject to the terms at https://greensock.com/standard-license or for
  * Club GreenSock members, the agreement issued with that membership.
  * @author: Jack Doyle, jack@greensock.com
-*/ /* eslint-disable */ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "CSSPlugin", ()=>CSSPlugin);
-parcelHelpers.export(exports, "default", ()=>CSSPlugin);
-parcelHelpers.export(exports, "_getBBox", ()=>_getBBox);
-parcelHelpers.export(exports, "_createElement", ()=>_createElement);
-parcelHelpers.export(exports, "checkPrefix", ()=>_checkPropPrefix);
-var _gsapCoreJs = require("./gsap-core.js");
+*/ /* eslint-disable */ var _gsapCoreJs = require("./gsap-core.js");
 var _win, _doc, _docElement, _pluginInitted, _tempDiv, _tempDivStyler, _recentSetterPlugin, _reverting, _windowExists = function _windowExists() {
     return typeof window !== "undefined";
 }, _transformProps = {}, _RAD2DEG = 180 / Math.PI, _DEG2RAD = Math.PI / 180, _atan2 = Math.atan2, _bigNum = 1e8, _capsExp = /([A-Z])/g, _horizontalExp = /(left|right|width|margin|padding|x)/i, _complexExp = /[\s,\(]\S/, _propertyAliases = {
@@ -42832,7 +42818,7 @@ _renderRoundedCSSProp = function _renderRoundedCSSProp(ratio, data) {
     var e = element || _tempDiv, s = e.style, i = 5;
     if (property in s && !preferPrefix) return property;
     property = property.charAt(0).toUpperCase() + property.substr(1);
-    while(i-- && !(_prefixes[i] + property in s));
+    while((i--) && !(_prefixes[i] + property in s));
     return i < 0 ? null : (i === 3 ? "ms" : i >= 0 ? _prefixes[i] : "") + property;
 }, _initCore = function _initCore() {
     if (_windowExists() && window.document) {
@@ -43662,7 +43648,14 @@ var CSSPlugin = {
 });
 (0, _gsapCoreJs.gsap).registerPlugin(CSSPlugin);
 
-},{"./gsap-core.js":"05eeC","@parcel/transformer-js/src/esmodule-helpers.js":"liiLQ"}],"k3xQk":[function(require,module,exports) {
+},{"./gsap-core.js":"05eeC","@parcel/transformer-js/src/esmodule-helpers.js":"5K4W2"}],"k3xQk":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "color", ()=>color);
+parcelHelpers.export(exports, "controllers", ()=>controllers);
+parcelHelpers.export(exports, "dom", ()=>dom$1);
+parcelHelpers.export(exports, "gui", ()=>gui);
+parcelHelpers.export(exports, "GUI", ()=>GUI$1);
 /**
  * dat-gui JavaScript Controller Library
  * https://github.com/dataarts/dat.gui
@@ -43674,14 +43667,7 @@ var CSSPlugin = {
  * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
- */ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "color", ()=>color);
-parcelHelpers.export(exports, "controllers", ()=>controllers);
-parcelHelpers.export(exports, "dom", ()=>dom$1);
-parcelHelpers.export(exports, "gui", ()=>gui);
-parcelHelpers.export(exports, "GUI", ()=>GUI$1);
-function ___$insertStyle(css) {
+ */ function ___$insertStyle(css) {
     if (!css) return;
     if (typeof window === "undefined") return;
     var style = document.createElement("style");
@@ -45953,7 +45939,7 @@ var index = {
 };
 exports.default = index;
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"liiLQ"}],"dVRsF":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"5K4W2"}],"dVRsF":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "GLTFLoader", ()=>GLTFLoader);
@@ -46845,7 +46831,7 @@ class GLTFBinaryExtension {
             "material.roughness = max( 1.0 - glossinessFactor, 0.0525 ); // 0.0525 corresponds to the base mip of a 256 cubemap.",
             "material.roughness += geometryRoughness;",
             "material.roughness = min( material.roughness, 1.0 );",
-            "material.specularColor = specularFactor;"
+            "material.specularColor = specularFactor;", 
         ].join("\n");
         const uniforms = {
             specular: {
@@ -47343,7 +47329,7 @@ function getImageURIMimeType(uri) {
             return Promise.all([
                 parser.getDependencies("scene"),
                 parser.getDependencies("animation"),
-                parser.getDependencies("camera")
+                parser.getDependencies("camera"), 
             ]);
         }).then(function(dependencies) {
             const result = {
@@ -48392,10 +48378,10 @@ function buildNodeHierarchy(nodeId, parentObject, json, parser) {
     return newGeometry;
 }
 
-},{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"liiLQ"}],"3CgX7":[function(require,module,exports) {
+},{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"5K4W2"}],"3cxOA":[function(require,module,exports) {
 module.exports = require("./helpers/bundle-url").getBundleURL("2MSMO") + "sky_stars_01_left.035e2f26.png" + "?" + Date.now();
 
-},{"./helpers/bundle-url":"9Wy8w"}],"9Wy8w":[function(require,module,exports) {
+},{"./helpers/bundle-url":"eUj3d"}],"eUj3d":[function(require,module,exports) {
 "use strict";
 var bundleURL = {};
 function getBundleURLCached(id) {
@@ -48429,24 +48415,24 @@ exports.getBundleURL = getBundleURLCached;
 exports.getBaseURL = getBaseURL;
 exports.getOrigin = getOrigin;
 
-},{}],"53iWI":[function(require,module,exports) {
+},{}],"9hnju":[function(require,module,exports) {
 module.exports = require("./helpers/bundle-url").getBundleURL("2MSMO") + "sky_stars_01_right.6de70666.png" + "?" + Date.now();
 
-},{"./helpers/bundle-url":"9Wy8w"}],"iJyQ5":[function(require,module,exports) {
+},{"./helpers/bundle-url":"eUj3d"}],"aKRAW":[function(require,module,exports) {
 module.exports = require("./helpers/bundle-url").getBundleURL("2MSMO") + "sky_stars_01_up.9adcbf20.png" + "?" + Date.now();
 
-},{"./helpers/bundle-url":"9Wy8w"}],"bKRK4":[function(require,module,exports) {
+},{"./helpers/bundle-url":"eUj3d"}],"eYgJh":[function(require,module,exports) {
 module.exports = require("./helpers/bundle-url").getBundleURL("2MSMO") + "sky_stars_01_down.f72758fb.png" + "?" + Date.now();
 
-},{"./helpers/bundle-url":"9Wy8w"}],"bKsDr":[function(require,module,exports) {
+},{"./helpers/bundle-url":"eUj3d"}],"bfROX":[function(require,module,exports) {
 module.exports = require("./helpers/bundle-url").getBundleURL("2MSMO") + "sky_stars_01_front.16c6c696.png" + "?" + Date.now();
 
-},{"./helpers/bundle-url":"9Wy8w"}],"7UHI3":[function(require,module,exports) {
+},{"./helpers/bundle-url":"eUj3d"}],"iuZ44":[function(require,module,exports) {
 module.exports = require("./helpers/bundle-url").getBundleURL("2MSMO") + "sky_stars_01_back.bba8c1f4.png" + "?" + Date.now();
 
-},{"./helpers/bundle-url":"9Wy8w"}],"6oTxN":[function(require,module,exports) {
+},{"./helpers/bundle-url":"eUj3d"}],"5DiMS":[function(require,module,exports) {
 module.exports = require("./helpers/bundle-url").getBundleURL("2MSMO") + "monkey.56a2d0f8.glb" + "?" + Date.now();
 
-},{"./helpers/bundle-url":"9Wy8w"}]},["fK4lP","dV6cC"], "dV6cC", "parcelRequire225a")
+},{"./helpers/bundle-url":"eUj3d"}]},["kQAxj","dV6cC"], "dV6cC", "parcelRequire225a")
 
 //# sourceMappingURL=index.e82f28a0.js.map
